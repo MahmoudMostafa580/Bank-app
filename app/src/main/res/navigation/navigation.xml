@@ -23,7 +23,7 @@
             android:id="@+id/action_customerDetailsFragment_to_customersFragment"
             app:destination="@id/customersFragment" />
         <argument
-            android:name="customerId"
+            android:name = "customerId"
             app:argType="long" />
     </fragment>
     <fragment
