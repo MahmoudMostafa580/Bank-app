@@ -20,5 +20,8 @@ interface CustomersDao {
     @Query("SELECT * FROM users_table WHERE userId = :id")
     fun getCustomer(id: Long) : User?
 
+    @Query("SELECT * FROM users_table WHERE userId != :userId")
+    fun getAllCustomersExceptOne(userId: Long) : List<User>
+
 
 }

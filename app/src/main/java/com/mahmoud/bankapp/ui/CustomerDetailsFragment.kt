@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import com.mahmoud.bankapp.databinding.FragmentCustomerDetailsBinding
 import com.mahmoud.bankapp.data.CustomerViewModelFactory
@@ -42,6 +43,11 @@ class CustomerDetailsFragment : Fragment() {
                 binding.customerNameValue.text = value.firstName + value.lastName
                 binding.customerEmailValue.text = value.email
             })
+
+        binding.transferMoneyCardBtn.setOnClickListener { view ->
+            val action = CustomerDetailsFragmentDirections.actionCustomerDetailsFragmentToCustomersFragment(customerId)
+            Navigation.findNavController(view).navigate(action)
+        }
         return binding.root
     }
 

@@ -18,7 +18,8 @@ class CustomersViewModel(
 
 
     var allCustomers = MutableLiveData<List<User>>()
-    var customer = MutableLiveData<User>()
+    private var customer = MutableLiveData<User>()
+    private var allCustomersExceptOne = MutableLiveData<List<User>>()
     private val viewModelJob = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
@@ -50,6 +51,20 @@ class CustomersViewModel(
         return withContext(Dispatchers.IO) {
             val customer = customersDao.getCustomer(id)
             customer
+        }
+    }
+
+    fun getAllCustomersExceptOne(customerId: Long): MutableLiveData<List<User>>{
+        uiScope.launch {
+            allCustomersExceptOne.value = getCustomersExceptOne(customerId)
+        }
+        return allCustomersExceptOne
+    }
+
+    private suspend fun getCustomersExceptOne(id: Long) : List<User>{
+        return withContext(Dispatchers.IO){
+            val customers = customersDao.getAllCustomersExceptOne(id)
+            customers
         }
     }
 
