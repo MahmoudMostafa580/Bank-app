@@ -61,6 +61,7 @@
                 android:layout_marginStart="8dp"
                 android:text="EG"
                 android:textColor="?attr/colorOutlineVariant"
+                app:layout_constraintVertical_bias="0.6"
                 app:layout_constraintBottom_toBottomOf="@id/balance_value_txt"
                 app:layout_constraintStart_toEndOf="@id/balance_value_txt"
                 app:layout_constraintTop_toTopOf="@id/balance_value_txt" />
@@ -111,7 +112,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
-                android:textColor="#716F6F"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="@id/customer_name_txt"
                 app:layout_constraintTop_toBottomOf="@id/customer_name_txt"

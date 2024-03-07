@@ -1,4 +1,4 @@
-package com.mahmoud.bankingapp.ui
+package com.mahmoud.bankapp.ui
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -12,7 +12,6 @@ import com.mahmoud.bankapp.data.CustomerViewModelFactory
 import com.mahmoud.bankapp.data.CustomersViewModel
 import com.mahmoud.bankapp.database.BankDatabase
 import com.mahmoud.bankapp.databinding.FragmentHomeBinding
-import com.mahmoud.bankapp.ui.CustomersAdapter
 
 class HomeFragment : Fragment() {
 
@@ -40,7 +39,8 @@ class HomeFragment : Fragment() {
             binding.customersList.adapter = customersAdapter
             customersAdapter.setOnItemClickListener(object: CustomersAdapter.OnItemClickListener{
                 override fun onItemClick(itemView: View, position: Int) {
-                    Navigation.findNavController(itemView).navigate(R.id.action_homeFragment_to_customerDetailsFragment)
+                    val action = HomeFragmentDirections.actionHomeFragmentToCustomerDetailsFragment(value[position].userId)
+                    Navigation.findNavController(itemView).navigate(action)
                 }
             })
         }
