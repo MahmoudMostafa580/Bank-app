@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.mahmoud.bankapp.R
@@ -46,7 +47,11 @@ class CustomersFragment : Fragment() {
                 customersAdapter.setOnItemClickListener(object :
                     CustomersAdapter.OnItemClickListener {
                     override fun onItemClick(itemView: View, position: Int) {
-                        showDialog()
+                        //move to transfer process screen
+                        val userFromId = customerId
+                        val userToId = value[position].userId
+                        val action = CustomersFragmentDirections.actionCustomersFragmentToTransferOperFragment(userFromId, userToId)
+                        itemView.findNavController().navigate(action)
                     }
                 })
             }
@@ -54,8 +59,5 @@ class CustomersFragment : Fragment() {
         return binding.root
     }
 
-    fun showDialog() {
-        Toast.makeText(requireActivity(), args.customerId.toString(), Toast.LENGTH_SHORT).show()
-    }
 
 }

@@ -1,33 +1,27 @@
 package com.mahmoud.bankapp.ui
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.mahmoud.bankapp.R
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.navArgs
+import com.mahmoud.bankapp.data.CustomerViewModelFactory
+import com.mahmoud.bankapp.data.CustomersViewModel
+import com.mahmoud.bankapp.database.BankDatabase
+import com.mahmoud.bankapp.databinding.FragmentTransferOperBinding
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [TransferOperFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class TransferOperFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
+    val args: TransferOperFragmentArgs by navArgs()
+    lateinit var customersViewModel: CustomersViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
     }
 
     override fun onCreateView(
@@ -35,26 +29,61 @@ class TransferOperFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_transfer_oper, container, false)
+        val binding: FragmentTransferOperBinding =
+            FragmentTransferOperBinding.inflate(inflater, container, false)
+        var userFromId = args.userFromId
+        var userToId = args.userToId
+
+        val application = requireNotNull(this.activity).application
+        val dataSource = BankDatabase.getInstance(application).customerDao
+        val viewModelFactory = CustomerViewModelFactory(dataSource, application)
+        customersViewModel =
+            ViewModelProvider(this, viewModelFactory).get(CustomersViewModel::class.java)
+
+
+        binding.confirmTransferBtn.setOnClickListener {
+            val amount = 1000.0 // test value
+            var sendResult = false
+            var receiveResult = false
+            customersViewModel.getSpecificCustomer(userFromId)
+                .observe(viewLifecycleOwner, Observer { value ->
+                    var userCurrentBalance = value.currentBalance
+                    if (amount <= userCurrentBalance) {
+                        userCurrentBalance = userCurrentBalance.minus(amount)
+                        sendResult = updateSenderBalance(userFromId, userCurrentBalance)
+                    }
+                })
+            customersViewModel.getSpecificCustomer(userToId)
+                .observe(viewLifecycleOwner, Observer { value ->
+                    var userCurrentBalance = value.currentBalance
+                    userCurrentBalance = userCurrentBalance.plus(amount)
+                    receiveResult = updateReceiverBalance(userToId, userCurrentBalance)
+                })
+            if (sendResult && receiveResult) {
+                Toast.makeText(requireActivity(), "Transfer successfully", Toast.LENGTH_SHORT)
+                    .show()
+            }
+
+        }
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment TransferOperFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            TransferOperFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    private fun updateReceiverBalance(userToId: Long, balance: Double): Boolean {
+        var result1 = false
+        customersViewModel.updateNewBalance(userToId, balance)
+            .observe(viewLifecycleOwner, Observer { value ->
+                result1 = value
+            })
+        return result1
     }
+
+    private fun updateSenderBalance(userFromId: Long, balance: Double): Boolean {
+        var result2 = false
+        customersViewModel.updateNewBalance(userFromId, balance)
+            .observe(viewLifecycleOwner, Observer { value ->
+                result2 = value
+            })
+        return result2
+    }
+
 }

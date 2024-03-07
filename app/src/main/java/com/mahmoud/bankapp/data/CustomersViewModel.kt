@@ -20,6 +20,7 @@ class CustomersViewModel(
     var allCustomers = MutableLiveData<List<User>>()
     private var customer = MutableLiveData<User>()
     private var allCustomersExceptOne = MutableLiveData<List<User>>()
+    private var isSuccess = MutableLiveData<Boolean>()
     private val viewModelJob = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
@@ -65,6 +66,20 @@ class CustomersViewModel(
         return withContext(Dispatchers.IO){
             val customers = customersDao.getAllCustomersExceptOne(id)
             customers
+        }
+    }
+
+    fun updateNewBalance(userId: Long, balance: Double): MutableLiveData<Boolean>{
+        uiScope.launch {
+            isSuccess.value = updateBalance(userId, balance)
+        }
+        return isSuccess
+    }
+
+    private suspend fun updateBalance(userId: Long, balance: Double): Boolean {
+       return withContext(Dispatchers.IO){
+            val isSuccess = customersDao.updateBalance(userId, balance)
+            isSuccess
         }
     }
 
