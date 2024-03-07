@@ -8,8 +8,8 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.mahmoud.bankapp.ui.HomeFragment"
-        android:label="fragment_home"
-        tools:layout="@layout/fragment_home" >
+        android:label="Banking App"
+        tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_homeFragment_to_customerDetailsFragment"
             app:destination="@id/customerDetailsFragment" />
@@ -17,20 +17,20 @@
     <fragment
         android:id="@+id/customerDetailsFragment"
         android:name="com.mahmoud.bankapp.ui.CustomerDetailsFragment"
-        android:label="fragment_customer_details"
-        tools:layout="@layout/fragment_customer_details" >
+        android:label="Customer Details"
+        tools:layout="@layout/fragment_customer_details">
         <action
             android:id="@+id/action_customerDetailsFragment_to_customersFragment"
             app:destination="@id/customersFragment" />
         <argument
-            android:name = "customerId"
+            android:name="customerId"
             app:argType="long" />
     </fragment>
     <fragment
         android:id="@+id/customersFragment"
         android:name="com.mahmoud.bankapp.ui.CustomersFragment"
-        android:label="fragment_customers"
-        tools:layout="@layout/fragment_customers" >
+        android:label="Choose customer to transfer"
+        tools:layout="@layout/fragment_customers">
         <action
             android:id="@+id/action_customersFragment_to_transferOperFragment"
             app:destination="@id/transferOperFragment" />
@@ -41,8 +41,8 @@
     <fragment
         android:id="@+id/transferOperFragment"
         android:name="com.mahmoud.bankapp.ui.TransferOperFragment"
-        android:label="fragment_transfer_oper"
-        tools:layout="@layout/fragment_transfer_oper" >
+        android:label="Transfer Proccess"
+        tools:layout="@layout/fragment_transfer_oper">
         <action
             android:id="@+id/action_transferOperFragment_to_homeFragment"
             app:destination="@id/homeFragment" />

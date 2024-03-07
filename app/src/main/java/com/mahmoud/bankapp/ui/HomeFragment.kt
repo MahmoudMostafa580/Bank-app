@@ -14,11 +14,11 @@ import com.mahmoud.bankapp.database.BankDatabase
 import com.mahmoud.bankapp.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
-
-
+    lateinit var customersAdapter: CustomersAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
     }
 
@@ -35,7 +35,7 @@ class HomeFragment : Fragment() {
         val customersViewModel = ViewModelProvider(this, viewModelFactory).get(CustomersViewModel::class.java)
 
         customersViewModel.allCustomers.observe(viewLifecycleOwner) { value ->
-            val customersAdapter = CustomersAdapter(value)
+            customersAdapter = CustomersAdapter(value)
             binding.customersList.adapter = customersAdapter
             customersAdapter.setOnItemClickListener(object: CustomersAdapter.OnItemClickListener{
                 override fun onItemClick(itemView: View, position: Int) {

@@ -9,10 +9,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
-import com.mahmoud.bankapp.databinding.FragmentCustomerDetailsBinding
 import com.mahmoud.bankapp.data.CustomerViewModelFactory
 import com.mahmoud.bankapp.data.CustomersViewModel
 import com.mahmoud.bankapp.database.BankDatabase
+import com.mahmoud.bankapp.databinding.FragmentCustomerDetailsBinding
 
 
 class CustomerDetailsFragment : Fragment() {
@@ -28,6 +28,8 @@ class CustomerDetailsFragment : Fragment() {
         // Inflate the layout for this fragment
         val binding: FragmentCustomerDetailsBinding =
             FragmentCustomerDetailsBinding.inflate(inflater, container, false)
+
+
 
         val application = requireNotNull(this.activity).application
         val dataSource = BankDatabase.getInstance(application).customerDao
@@ -45,7 +47,10 @@ class CustomerDetailsFragment : Fragment() {
             })
 
         binding.transferMoneyCardBtn.setOnClickListener { view ->
-            val action = CustomerDetailsFragmentDirections.actionCustomerDetailsFragmentToCustomersFragment(customerId)
+            val action =
+                CustomerDetailsFragmentDirections.actionCustomerDetailsFragmentToCustomersFragment(
+                    customerId
+                )
             Navigation.findNavController(view).navigate(action)
         }
         return binding.root
