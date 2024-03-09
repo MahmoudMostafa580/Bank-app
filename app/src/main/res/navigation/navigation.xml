@@ -43,14 +43,16 @@
         android:name="com.mahmoud.bankapp.ui.TransferOperFragment"
         android:label="Transfer Process"
         tools:layout="@layout/fragment_transfer_oper">
-        <action
-            android:id="@+id/action_transferOperFragment_to_homeFragment"
-            app:destination="@id/homeFragment" />
         <argument
             android:name="userFromId"
             app:argType="long" />
         <argument
             android:name="userToId"
             app:argType="long" />
+        <action
+            android:id="@+id/action_transferOperFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true"/>
     </fragment>
 </navigation>

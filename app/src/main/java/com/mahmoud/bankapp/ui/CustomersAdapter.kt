@@ -23,7 +23,7 @@ class CustomersAdapter(val customersList: List<User>) :
     override fun onBindViewHolder(holder: CustomerViewHolder, position: Int) {
         val currentCustomer = customersList[position]
         holder.customerName.text = "${currentCustomer.firstName} ${currentCustomer.lastName}"
-        holder.customerBalance.text = "${currentCustomer.currentBalance.toString()} EG"
+        holder.customerBalance.text = "${currentCustomer.currentBalance} EG"
     }
 
     override fun getItemCount() = customersList.size
