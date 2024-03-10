@@ -12,9 +12,11 @@ import com.mahmoud.bankapp.data.CustomerViewModelFactory
 import com.mahmoud.bankapp.data.CustomersViewModel
 import com.mahmoud.bankapp.database.BankDatabase
 import com.mahmoud.bankapp.databinding.FragmentHomeBinding
+import com.mahmoud.bankapp.models.User
 
 class HomeFragment : Fragment() {
-    lateinit var customersAdapter: CustomersAdapter
+    private lateinit var customersAdapter: CustomersAdapter
+    lateinit var binding: FragmentHomeBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +29,7 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        val binding: FragmentHomeBinding = FragmentHomeBinding.inflate(inflater, container, false)
+        binding = FragmentHomeBinding.inflate(inflater, container, false)
         val application = requireNotNull(this.activity).application
         val dataSource = BankDatabase.getInstance(application).customerDao
 
@@ -35,14 +37,21 @@ class HomeFragment : Fragment() {
         val customersViewModel = ViewModelProvider(this, viewModelFactory).get(CustomersViewModel::class.java)
 
         customersViewModel.allCustomers.observe(viewLifecycleOwner) { value ->
-            customersAdapter = CustomersAdapter(value)
-            binding.customersList.adapter = customersAdapter
-            customersAdapter.setOnItemClickListener(object: CustomersAdapter.OnItemClickListener{
-                override fun onItemClick(itemView: View, position: Int) {
-                    val action = HomeFragmentDirections.actionHomeFragmentToCustomerDetailsFragment(value[position].userId)
-                    Navigation.findNavController(itemView).navigate(action)
-                }
-            })
+            if (value.isNotEmpty() || value!=null){
+                val customers: List<User> = value
+                customersAdapter = CustomersAdapter(customers)
+                binding.customersList.adapter = customersAdapter
+                binding.customersList.setHasFixedSize(true)
+                customersAdapter.notifyDataSetChanged()
+                customersAdapter.setOnItemClickListener(object: CustomersAdapter.OnItemClickListener{
+                    override fun onItemClick(itemView: View, position: Int) {
+                        val action = HomeFragmentDirections.actionHomeFragmentToCustomerDetailsFragment(value[position].userId)
+                        Navigation.findNavController(itemView).navigate(action)
+                    }
+                })
+
+            }
+
         }
 
 

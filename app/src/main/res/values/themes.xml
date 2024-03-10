@@ -1,8 +1,10 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.BankApp" parent="Theme.Material3.DayNight">
+    <style name="Base.Theme.BankApp" parent="Theme.Material3.Light">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimaryDark">@color/main_color</item>
+        <item name="colorPrimary">#2E415E</item>
     </style>
 
     <style name="Theme.BankApp" parent="Base.Theme.BankApp" />
