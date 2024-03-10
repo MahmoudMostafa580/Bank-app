@@ -3,8 +3,7 @@ package com.mahmoud.bankapp.database
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import androidx.room.Update
-import com.mahmoud.bankapp.database.User
+import com.mahmoud.bankapp.models.User
 
 @Dao
 interface CustomersDao {

@@ -1,6 +1,6 @@
 package com.mahmoud.bankapp
 
-import com.mahmoud.bankapp.database.User
+import com.mahmoud.bankapp.models.User
 
 
 fun customersList(): List<User> {

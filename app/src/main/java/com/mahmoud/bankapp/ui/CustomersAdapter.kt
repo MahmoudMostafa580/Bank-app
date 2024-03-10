@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.mahmoud.bankapp.R
-import com.mahmoud.bankapp.database.User
+import com.mahmoud.bankapp.models.User
 
 class CustomersAdapter(val customersList: List<User>) :
     RecyclerView.Adapter<CustomersAdapter.CustomerViewHolder>() {

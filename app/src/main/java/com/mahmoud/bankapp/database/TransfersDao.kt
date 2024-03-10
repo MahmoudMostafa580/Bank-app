@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import com.mahmoud.bankapp.database.Transfer
+import com.mahmoud.bankapp.models.Transfer
 
 @Dao
 interface TransfersDao {

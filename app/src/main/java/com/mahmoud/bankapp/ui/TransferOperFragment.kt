@@ -13,17 +13,21 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import com.mahmoud.bankapp.data.CustomerViewModelFactory
 import com.mahmoud.bankapp.data.CustomersViewModel
+import com.mahmoud.bankapp.data.TransfersViewModel
+import com.mahmoud.bankapp.data.TransfersViewModelFactory
 import com.mahmoud.bankapp.database.BankDatabase
-import com.mahmoud.bankapp.database.User
 import com.mahmoud.bankapp.databinding.FragmentTransferOperBinding
-
+import com.mahmoud.bankapp.models.Transfer
+import com.mahmoud.bankapp.models.User
 
 class TransferOperFragment : Fragment() {
 
+    lateinit var binding: FragmentTransferOperBinding
     private val args: TransferOperFragmentArgs by navArgs()
-    private var sendResult: Int = 0
-    private var receiveResult: Int = 0
     lateinit var customersViewModel: CustomersViewModel
+    lateinit var customersViewModelFactory: CustomerViewModelFactory
+    lateinit var transfersViewModel: TransfersViewModel
+    lateinit var transfersViewModelFactory: TransfersViewModelFactory
 
     lateinit var sender: User
     lateinit var receiver: User
@@ -37,74 +41,97 @@ class TransferOperFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val binding: FragmentTransferOperBinding =
-            FragmentTransferOperBinding.inflate(inflater, container, false)
+        binding = FragmentTransferOperBinding.inflate(inflater, container, false)
         val userFromId = args.userFromId
         val userToId = args.userToId
 
         val application = requireNotNull(this.activity).application
-        val dataSource = BankDatabase.getInstance(application).customerDao
-        val viewModelFactory = CustomerViewModelFactory(dataSource, application)
+        val dataSourceCustomers = BankDatabase.getInstance(application).customerDao
+        val dataSourceTransfers = BankDatabase.getInstance(application).transfersDao
+
+        customersViewModelFactory = CustomerViewModelFactory(dataSourceCustomers, application)
         customersViewModel =
-            ViewModelProvider(this, viewModelFactory).get(CustomersViewModel::class.java)
+            ViewModelProvider(this, customersViewModelFactory).get(CustomersViewModel::class.java)
+
+        transfersViewModelFactory = TransfersViewModelFactory(dataSourceTransfers, application)
+        transfersViewModel =
+            ViewModelProvider(this, transfersViewModelFactory).get(TransfersViewModel::class.java)
 
 
         customersViewModel.getSenderCustomer(userFromId)
             .observe(viewLifecycleOwner, Observer { value ->
                 sender = value
-                val senderCurrentBalance = value.currentBalance
-                val senderName = value.firstName + value.lastName
-                Log.v("Sender name :", senderName)
-                binding.senderNameTxt.text = senderName
-                binding.availableAmountValue.text = senderCurrentBalance.toString()
+                binding.senderNameTxt.text = value.firstName + value.lastName
+                binding.availableAmountValue.text = "${value.currentBalance} EG"
 
             })
 
         customersViewModel.getReceiverCustomer(userToId)
             .observe(viewLifecycleOwner, Observer { value ->
-                val receiverName = value.firstName + value.lastName
-                Log.v("Receiver name :", receiverName)
-                binding.receiverNameTxt.text = receiverName
+                receiver = value
+                binding.receiverNameTxt.text = value.firstName + value.lastName
             })
 
         binding.confirmTransferBtn.setOnClickListener { view ->
             val amountString = binding.amountLayout.editText?.text.toString()
-            val amount = amountString.toDouble()
-            if (amount <= sender.currentBalance) {
-                val senderNewCurrentBalance = sender.currentBalance.minus(amount)
-                updateSenderBalance(userFromId, senderNewCurrentBalance)
-            }
-            val receiverNewCurrentBalance = receiver.currentBalance.plus(amount)
-            updateReceiverBalance(userToId, receiverNewCurrentBalance)
+            if (validateAmount(amountString)) {
+                val amount = amountString.toDouble()
+                if (amount <= sender.currentBalance) {
+                    val senderNewCurrentBalance = sender.currentBalance.minus(amount)
+                    val sendRes = updateSenderBalance(userFromId, senderNewCurrentBalance)
 
-            if (sendResult == 1 && receiveResult == 1) {
-                Toast.makeText(requireActivity(), "Transfer successfully", Toast.LENGTH_SHORT)
-                    .show()
-                //backstack to home fragment..
-                val action =
-                    TransferOperFragmentDirections.actionTransferOperFragmentToHomeFragment()
-                Navigation.findNavController(view).navigate(action)
-            } else {
-                Toast.makeText(requireActivity(), "Transfer failed!!", Toast.LENGTH_SHORT).show()
+                    val receiverNewCurrentBalance = receiver.currentBalance.plus(amount)
+                    val receiveRes = updateReceiverBalance(userToId, receiverNewCurrentBalance)
+
+                    if (sendRes ==1 && receiveRes == 1){
+                        Toast.makeText(requireActivity(), "Transfer successfully", Toast.LENGTH_SHORT).show()
+                        //back to home fragment..
+                        val action = TransferOperFragmentDirections.actionTransferOperFragmentToHomeFragment()
+                        Navigation.findNavController(view).navigate(action)
+
+                        //add the transfer to transfer table
+                        val transfer = Transfer(userFromId, userToId, amount, System.currentTimeMillis())
+                        addToTransfersTable(transfer)
+                    }else{
+                        return@setOnClickListener
+                    }
+                } else {
+                    binding.amountLayout.error = "Amount not available!"
+                    return@setOnClickListener
+                }
             }
         }
         return binding.root
     }
 
-    private fun updateReceiverBalance(userToId: Long, balance: Double) {
-        customersViewModel.updateNewBalance(userToId, balance)
-        customersViewModel.isSuccess.observe(viewLifecycleOwner, Observer { value ->
-            sendResult = value
-            Log.v("sendResult", sendResult.toString())
-        })
+    private fun addToTransfersTable(transfer: Transfer) {
+        transfersViewModel.insertTransfer(transfer)
     }
 
-    private fun updateSenderBalance(userFromId: Long, balance: Double) {
+    private fun updateReceiverBalance(userToId: Long, balance: Double):Int {
+        var receiveResult = 0
+        customersViewModel.updateNewBalance(userToId, balance)
+            .observe(viewLifecycleOwner, Observer { value ->
+                receiveResult = value
+            })
+        return receiveResult
+    }
+
+    private fun updateSenderBalance(userFromId: Long, balance: Double): Int {
+        var sendResult = 0
         customersViewModel.updateNewBalance(userFromId, balance)
-        customersViewModel.isSuccess.observe(viewLifecycleOwner, Observer { value ->
-            receiveResult = value
-            Log.v("receiveResult", receiveResult.toString())
-        })
+            .observe(viewLifecycleOwner, Observer { value ->
+                sendResult = value
+            })
+        return sendResult
+    }
+
+    private fun validateAmount(amountString: String): Boolean {
+        if (amountString.isEmpty()) {
+            binding.amountLayout.error = "Please enter valid amount"
+            return false
+        }
+        return true
     }
 
 }

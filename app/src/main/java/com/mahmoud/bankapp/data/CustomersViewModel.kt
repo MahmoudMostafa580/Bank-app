@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.mahmoud.bankapp.database.CustomersDao
-import com.mahmoud.bankapp.database.User
+import com.mahmoud.bankapp.models.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -22,7 +22,7 @@ class CustomersViewModel(
     private var senderCustomer = MutableLiveData<User>()
     private var receiverCustomer = MutableLiveData<User>()
     private var allCustomersExceptOne = MutableLiveData<List<User>>()
-    var isSuccess = MutableLiveData<Int>()
+    private var isSuccess = MutableLiveData<Int>()
     private val viewModelJob = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
@@ -85,11 +85,12 @@ class CustomersViewModel(
         }
     }
 
-    fun updateNewBalance(userId: Long, balance: Double) {
+    fun updateNewBalance(userId: Long, balance: Double):MutableLiveData<Int> {
         uiScope.launch {
             isSuccess.value = updateBalance(userId, balance)
             Log.v("is successful", isSuccess.value.toString())
         }
+        return isSuccess
     }
 
     private suspend fun updateBalance(userId: Long, balance: Double): Int {

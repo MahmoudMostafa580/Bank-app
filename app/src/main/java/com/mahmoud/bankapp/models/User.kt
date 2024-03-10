@@ -1,4 +1,4 @@
-package com.mahmoud.bankapp.database
+package com.mahmoud.bankapp.models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
