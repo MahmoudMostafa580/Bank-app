@@ -10,7 +10,7 @@ import com.mahmoud.bankapp.models.Transfer
 interface TransfersDao {
 
     @Insert
-    fun insertTransfer(transfer: Transfer)
+    fun insertToTable(transfer: Transfer)
 
     @Query("SELECT * FROM transfers_table ORDER BY transferDate DESC")
     fun getAllTransfers(): LiveData<List<Transfer>>

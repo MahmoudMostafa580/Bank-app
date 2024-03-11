@@ -8,7 +8,6 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "transfers_table")
 data class Transfer(
     @ColumnInfo(name = "From")
-    @PrimaryKey(autoGenerate = false)
     var transferFromUserId : Long,
 
     @ColumnInfo(name = "To")
@@ -17,5 +16,6 @@ data class Transfer(
     @ColumnInfo(name = "Amount")
     var moneyAmount : Double,
 
-    var transferDate : Long = System.currentTimeMillis()
+    @PrimaryKey(autoGenerate = false)
+    var transferDate : Long
 )

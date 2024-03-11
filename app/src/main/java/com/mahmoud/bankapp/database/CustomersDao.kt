@@ -11,7 +11,7 @@ interface CustomersDao {
     fun insertCustomer(users: User)
 
     @Query("UPDATE users_table SET currentBalance = :newBalance WHERE userId= :userId")
-    fun updateBalance(userId: Long, newBalance: Double): Int
+    fun updateBalance(userId: Long, newBalance: Double)
 
     @Query("SELECT * FROM users_table ORDER BY userId ASC")
     fun getAllCustomers(): List<User>

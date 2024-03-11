@@ -22,7 +22,6 @@ class CustomersViewModel(
     private var senderCustomer = MutableLiveData<User>()
     private var receiverCustomer = MutableLiveData<User>()
     private var allCustomersExceptOne = MutableLiveData<List<User>>()
-    private var isSuccess = MutableLiveData<Int>()
     private val viewModelJob = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
@@ -85,19 +84,24 @@ class CustomersViewModel(
         }
     }
 
-    fun updateNewBalance(userId: Long, balance: Double):MutableLiveData<Int> {
+    fun updateNewBalance(userId: Long, balance: Double) {
+        Log.v("Update status : ", "Beginning of update..")
         uiScope.launch {
-            isSuccess.value = updateBalance(userId, balance)
-            Log.v("is successful", isSuccess.value.toString())
+            updateBalance(userId, balance)
+
+
         }
-        return isSuccess
     }
 
-    private suspend fun updateBalance(userId: Long, balance: Double): Int {
-        return withContext(Dispatchers.IO) {
+    private suspend fun updateBalance(userId: Long, balance: Double) {
+        withContext(Dispatchers.IO) {
             customersDao.updateBalance(userId, balance)
+            Log.v("Update status : ", "update done..")
         }
     }
 
-
+    override fun onCleared() {
+        super.onCleared()
+        viewModelJob.cancel()
+    }
 }
