@@ -11,6 +11,7 @@ Android
 * Android Studio
 * Room database
 * Navigation Component
+* Coroutine
 * RecyclerView
 * Material Design
 # Architecture pattern
